@@ -25,9 +25,8 @@ namespace AdventOfCode2019.Tests
         public void SamplePart2(int moduleMass, int expectedFuelMass)
         {
             var solver = new Day01Solver();
-            var fuelMass = solver.ComputeFuelMass(moduleMass);
-            var additionalFuelMass = solver.ComputeAdditionalFuelMass(fuelMass);
-            Assert.Equal(fuelMass + additionalFuelMass, expectedFuelMass);
+            var fuelMass = solver.ComputeFuelMassWithAddedFuelMass(moduleMass);
+            Assert.Equal(fuelMass, expectedFuelMass);
         }
     }
 }

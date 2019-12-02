@@ -24,9 +24,8 @@ namespace AdventOfCode2019.Solvers
             foreach(var line in lines)
             {
                 var moduleMass = Convert.ToInt32(line);
-                var fuelMass = ComputeFuelMass(moduleMass);
-                var additionalFuelMass = ComputeAdditionalFuelMass(fuelMass);
-                totalFuelMass += additionalFuelMass + fuelMass;
+                var fuelMass = ComputeFuelMassWithAddedFuelMass(moduleMass);
+                totalFuelMass += fuelMass;
             }
 
             return totalFuelMass.ToString();
@@ -34,12 +33,12 @@ namespace AdventOfCode2019.Solvers
 
         public int ComputeFuelMass(int mass) => (mass / 3) - 2;
 
-        public int ComputeAdditionalFuelMass(int fuelMass)
+        public int ComputeFuelMassWithAddedFuelMass(int mass)
         {
-            var additionalFuelMass = ComputeFuelMass(fuelMass);
-            if (additionalFuelMass >= 0)
+            var fuelMass = ComputeFuelMass(mass);
+            if (fuelMass >= 0)
             {
-                return additionalFuelMass + ComputeAdditionalFuelMass(additionalFuelMass);
+                return fuelMass + ComputeFuelMassWithAddedFuelMass(fuelMass);
             }
             return 0;
         }

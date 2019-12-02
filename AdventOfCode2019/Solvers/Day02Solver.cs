@@ -12,13 +12,9 @@ namespace AdventOfCode2019.Solvers
                 .Select(i => Convert.ToInt32(i))
                 .ToArray();
 
-            // replace position 1 with the value 12 and replace position 2 with the value 2
-            program[1] = 12;
-            program[2] = 2;
+            var ret = ExecuteProgram(program, 12, 2);
 
-            ExecuteProgram(program);
-
-            return program[0].ToString();
+            return ret.ToString();
         }
 
         public string SolvePart2(IEnumerable<string> inputs)
@@ -32,42 +28,50 @@ namespace AdventOfCode2019.Solvers
             {
                 for (var verb = 0; verb < 100; verb++)
                 {
-                    var copyProgram = program.ToArray();
-                    copyProgram[1] = noun;
-                    copyProgram[2] = verb;
-
-                    ExecuteProgram(copyProgram);
-
-                    if (copyProgram[0] == 19690720)
+                    var ret = ExecuteProgram(program, noun, verb);
+                    if (ret == 19690720)
                     {
                         return (100 * noun + verb).ToString();
                     }
                 }
             }
 
-            return "NAH!";
+            throw new Exception("Brute force failed ?!");
         }
 
-        public void ExecuteProgram(int[] program)
+        public int ExecuteProgram(int[] program, int noun, int verb)
         {
-            var position = 0;
+            var memory = program.ToArray();
+
+            memory[1] = noun;
+            memory[2] = verb;
+
+            Execute(memory);
+
+            return memory[0];
+        }
+
+        public void Execute(int[] memory)
+        {
+            var pointer = 0;
 
             while (true)
             {
-                switch (program[position])
+                var opcode = memory[pointer];
+                switch (opcode)
                 {
-                    case 1:
-                        program[program[position + 3]] = program[program[position + 1]] + program[program[position + 2]];
-                        position = position + 4;
+                    case 1: // add
+                        memory[memory[pointer + 3]] = memory[memory[pointer + 1]] + memory[memory[pointer + 2]];
+                        pointer = pointer + 4;
                         break;
-                    case 2:
-                        program[program[position + 3]] = program[program[position + 1]] * program[program[position + 2]];
-                        position = position + 4;
+                    case 2: // multiply
+                        memory[memory[pointer + 3]] = memory[memory[pointer + 1]] * memory[memory[pointer + 2]];
+                        pointer = pointer + 4;
                         break;
-                    case 99:
+                    case 99: // halt
                         return;
                     default:
-                        throw new Exception("Boom!");
+                        throw new Exception($"Invalid opcode: {opcode}");
                 }
             }
         }
