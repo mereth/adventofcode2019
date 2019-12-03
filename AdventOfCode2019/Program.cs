@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using AdventOfCode2019.Solvers;
@@ -26,11 +27,17 @@ namespace AdventOfCode2019
             var solverType = Type.GetType($"AdventOfCode2019.Solvers.Day{day}Solver", true);
             var solver = Activator.CreateInstance(solverType) as ISolver;
             
-            var answerPart1 = solver.SolvePart1(inputs);
-            var answerPart2 = solver.SolvePart2(inputs);
+            var stopwatch = new Stopwatch();
 
-            Console.WriteLine($"Answer Part 1: {answerPart1}");
-            Console.WriteLine($"Answer Part 2: {answerPart2}");
+            stopwatch.Start();
+            var answerPart1 = solver.SolvePart1(inputs);
+            stopwatch.Stop();
+            Console.WriteLine($"Answer Part 1: {answerPart1} in {stopwatch.ElapsedMilliseconds}ms");
+
+            stopwatch.Restart();
+            var answerPart2 = solver.SolvePart2(inputs);
+            stopwatch.Stop();
+            Console.WriteLine($"Answer Part 2: {answerPart2} in {stopwatch.ElapsedMilliseconds}ms");
         }
 
         static IReadOnlyCollection<string> LoadInputs(string inputFilePath)
