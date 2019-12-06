@@ -32,12 +32,12 @@ namespace AdventOfCode2019
             stopwatch.Start();
             var answerPart1 = solver.SolvePart1(inputs);
             stopwatch.Stop();
-            Console.WriteLine($"Answer Part 1: {answerPart1} in {stopwatch.ElapsedMilliseconds}ms");
+            Console.WriteLine($"Answer Part 1: {answerPart1} in {stopwatch.Elapsed.TotalMilliseconds}ms");
 
             stopwatch.Restart();
             var answerPart2 = solver.SolvePart2(inputs);
             stopwatch.Stop();
-            Console.WriteLine($"Answer Part 2: {answerPart2} in {stopwatch.ElapsedMilliseconds}ms");
+            Console.WriteLine($"Answer Part 2: {answerPart2} in {stopwatch.Elapsed.TotalMilliseconds}ms");
         }
 
         static IReadOnlyCollection<string> LoadInputs(string inputFilePath)
