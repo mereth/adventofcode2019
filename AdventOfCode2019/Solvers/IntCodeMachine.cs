@@ -27,70 +27,66 @@ namespace AdventOfCode2019.Solvers
 
             while (true)
             {
-                var opcodeString = memory[pointer].ToString().PadLeft(5,'0');
+                var opCodeAndModes = ExtractOpCodeAndModes(memory[pointer]);
 
-                var opcode = opcodeString.Substring(opcodeString.Length - 2);
-                var mode1 = opcodeString[2] == '0';
-                var mode2 = opcodeString[1] == '0';
-                var mode3 = opcodeString[0] == '0';
+                int Read(int i) => opCodeAndModes[i] == 0 ? memory[memory[pointer + i]] : memory[pointer + i];
                 
+                var opcode = opCodeAndModes[0];
                 switch (opcode)
                 {
-                    case "01": // add
-                        memory[memory[pointer + 3]] = (mode1 ? memory[memory[pointer + 1]] : memory[pointer + 1]) +
-                            (mode2 ? memory[memory[pointer + 2]] : memory[pointer + 2]);
+                    case 1: // add
+                        memory[memory[pointer + 3]] = Read(1) + Read(2);
                         pointer = pointer + 4;
                         break;
-                    case "02": // multiply
-                        memory[memory[pointer + 3]] = (mode1 ? memory[memory[pointer + 1]] : memory[pointer + 1]) *
-                            (mode2 ? memory[memory[pointer + 2]] : memory[pointer + 2]);
+                    case 2: // multiply
+                        memory[memory[pointer + 3]] = Read(1) * Read(2);
                         pointer = pointer + 4;
                         break;
-                    case "03": // input
-                        //Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} ~");
+                    case 3: // input
                         memory[memory[pointer + 1]] = input.Take();
-                        //Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} <= {memory[memory[pointer + 1]]}");
                         pointer = pointer + 2;
                         break;
-                    case "04": // output
-                        //Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} => {(mode1 ? memory[memory[pointer + 1]] : memory[pointer + 1])}");
-                        output.Add(mode1 ? memory[memory[pointer + 1]] : memory[pointer + 1]);
+                    case 4: // output
+                        output.Add(Read(1));
                         pointer = pointer + 2;
                         break;
-                    case "05": // jump-if-true
+                    case 5: // jump-if-true
                         // if the first parameter is non-zero, it sets the instruction pointer to the value from the second parameter. Otherwise, it does nothing.
-                        var test05 = mode1 ? memory[memory[pointer + 1]] : memory[pointer + 1];
-                        if (test05 != 0)
-                            pointer = mode2 ? memory[memory[pointer + 2]] : memory[pointer + 2];
-                        else
-                            pointer = pointer + 3;
+                        pointer = Read(1) != 0 ? Read(2) : pointer + 3;
                         break;
-                    case "06": // jump-if-false
+                    case 6: // jump-if-false
                         // if the first parameter is zero, it sets the instruction pointer to the value from the second parameter. Otherwise, it does nothing.
-                        var test06 = mode1 ? memory[memory[pointer + 1]] : memory[pointer + 1];
-                        if (test06 == 0)
-                            pointer = mode2 ? memory[memory[pointer + 2]] : memory[pointer + 2];
-                        else
-                            pointer = pointer + 3;
+                        pointer = Read(1) == 0 ? Read(2) : pointer + 3;
                         break;
-                    case "07": // less than
+                    case 7: // less than
                         // if the first parameter is less than the second parameter, it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
-                        var test07 = (mode1 ? memory[memory[pointer + 1]] : memory[pointer + 1]) < (mode2 ? memory[memory[pointer + 2]] : memory[pointer + 2]);
-                        memory[memory[pointer + 3]] = test07 ? 1 : 0;
+                        memory[memory[pointer + 3]] = Read(1) < Read(2) ? 1 : 0;
                         pointer = pointer + 4;
                         break;
-                    case "08": // equals
+                    case 8: // equals
                         // if the first parameter is equal to the second parameter, it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
-                        var test08 = (mode1 ? memory[memory[pointer + 1]] : memory[pointer + 1]) == (mode2 ? memory[memory[pointer + 2]] : memory[pointer + 2]);
-                        memory[memory[pointer + 3]] = test08 ? 1 : 0;
+                        memory[memory[pointer + 3]] = Read(1) == Read(2) ? 1 : 0;
                         pointer = pointer + 4;
                         break;
-                    case "99": // halt
+                    case 99: // halt
                         return;
                     default:
                         throw new Exception($"Invalid opcode: {opcode}");
                 }
             }
+        }
+
+        private int[] ExtractOpCodeAndModes(int fullOpCode)
+        {
+            var opcode = new int[4];
+
+            opcode[0] = fullOpCode % 100;
+
+            opcode[1] = (fullOpCode / 100) % 10;
+            opcode[2] = (fullOpCode / 1000) % 10;
+            opcode[3] = (fullOpCode / 10000) % 10;
+
+            return opcode;
         }
     }
 }
